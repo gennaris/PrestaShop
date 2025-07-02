@@ -228,16 +228,15 @@ class CartPresenter implements PresenterInterface
     public function getAttributesArrayFromString($attributes)
     {
         $separator = Configuration::get('PS_ATTRIBUTE_ANCHOR_SEPARATOR');
-        $pattern = '/(?>(?P<attribute>[^:]+:[^:]+)' . $separator . '+(?!' . $separator . '([^:' . $separator . '])+:))/';
         $attributesArray = [];
-        $matches = [];
-        if (!preg_match_all($pattern, $attributes . $separator, $matches)) {
-            return $attributesArray;
-        }
 
-        foreach ($matches['attribute'] as $attribute) {
-            [$key, $value] = explode(':', $attribute);
-            $attributesArray[trim($key)] = ltrim($value);
+        $pairs = explode($separator, trim($attributes, $separator));
+
+        foreach ($pairs as $pair) {
+            if (strpos($pair, ':') !== false) {
+                [$key, $value] = explode(':', $pair, 2);
+                $attributesArray[trim($key)] = trim($value);
+            }
         }
 
         return $attributesArray;
